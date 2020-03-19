@@ -1,6 +1,14 @@
 from getArticleData import getArticleData
 
 import yaml
+import json
+
+cachePath = 'data/cache.json'
+try:
+    cache = json.load(open(cachePath))
+except FileNotFoundError:
+    cache = dict()
+newCache = dict()
 
 data = []
 with open('articles.yaml') as f:
@@ -31,3 +39,10 @@ for articleNr in data:
         continue
 
     print('Article #' + articleNr + ' has a discount of ' + str(discount) + ' CHF (' + str(round(discount/amountBefore, 2)*100) + '%)')
+    if (articleNr not in cache.keys()) or (cache[articleNr] != amountIncl):
+        print('New discount')
+
+    newCache[articleNr] = amountIncl
+
+cacheFile = open(cachePath, 'w')
+json.dump(newCache, cacheFile)
